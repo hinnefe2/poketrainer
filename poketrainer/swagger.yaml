@@ -1,0 +1,113 @@
+swagger: "2.0"
+info:
+  description: A RESTful API for interacting with Pokemon trainer data
+  version: "0.1.0"
+  title: PokeTrainer API
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+paths:
+
+  /collection:
+    get:
+      operationId: "poketrainer.api.collection.get"
+      summary: "Get the pokemon in the user's collection"
+      responses:
+        200:
+          description: "Successful read collection"
+    post:
+      operationId: "poketrainer.api.collection.post"
+      summary: "Add a pokemon to the user's collection"
+      parameters:
+        - in: query
+          name: species
+          required: true
+          type: string
+          description: The species of pokemon
+        - in: query
+          name: level
+          required: true
+          type: integer
+          description: The pokemon's level
+      responses:
+        201:
+          description: "Successfully added a pokemon to collection"
+
+  /collection/{uid}:
+    patch:
+      operationId: "poketrainer.api.collection.patch"
+      summary: "Update a pokemon in the user's collection"
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          type: integer
+          description: The pokemon's uid
+        - in: query
+          name: exp_gain
+          required: false
+          type: integer
+          description: The pokemon's gained experience
+      responses:
+        204:
+          description: "Successful updated a pokemon in the collection"
+
+  /team:
+    get:
+      operationId: "poketrainer.api.team.get"
+      summary: "Get the pokemon in the user's team"
+      responses:
+        200:
+          description: "Successfully read team"
+
+  /team/{pokemon_uid}:
+    post:
+      operationId: "poketrainer.api.team.post"
+      parameters:
+        - in: path
+          name: pokemon_uid 
+          required: true
+          type: integer
+          description: "The uid of the pokemon to add"
+      responses:
+        201:
+          description: "Succesfully added a pokemon to the team"
+        209:
+          description: "Failed to add a pokemon to the team because it's full"
+    delete:
+      operationId: "poketrainer.api.team.delete"
+      parameters:
+        - in: path
+          name: pokemon_uid 
+          required: true
+          type: integer
+          description: "The uid of the pokemon to drop"
+      responses:
+        200:
+          description: "Succesfully dropped a pokemon from the team"
+
+  /syncs/steps:
+    post:
+      operationId: "poketrainer.api.syncs.steps.post"
+      summary: "Pull steps from a fitness tracker API"
+      parameters:
+        - in: query
+          name: date
+          required: true
+          type: string
+          description: "The date to pull data for"
+      responses:
+        201:
+          description: "Successfully pulled steps"
+
+  /encounters:
+    post:
+      operationId: "poketrainer.api.encounters.post"
+      summary: "Create a pokemon encounter"
+      responses:
+        201:
+          description: "Successfully created encounter"

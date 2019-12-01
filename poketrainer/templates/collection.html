@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="card-columns">
+
+    {% for mon in pokemon %}
+
+    <div class="card" style="width: 15rem;">
+        <img src="https://img.pokemondb.net/sprites/x-y/normal/{{mon.species}}.png" class="card-img-top" alt="{{mon.species}}">
+        <div class="card-body">
+            <h5 class="card-title">{{mon.species | title}}</h5>
+            <p class="card-text">Level: {{mon.level}}</p>
+            <p class="card-text">Experience: {{mon.experience}}</p>
+            {% if mon.team_uid == 1 %}
+            <a href="" class="btn btn-warning drop-mon" uid={{mon.uid}}>Drop from team</a>
+            {% else %}
+            <a href="" class="btn btn-success add-mon" uid={{mon.uid}}>Add to team</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% endfor %}
+
+    <script src="{{ url_for('static', filename='js/button.js') }}"></script>
+
+    </div>
+
+{% endblock %}
