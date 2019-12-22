@@ -3,11 +3,43 @@ import logging
 
 import requests
 
+from flask import redirect, request
 from requests_oauthlib import OAuth2Session
+
 from poketrainer.app import flask_app
 
 
-def generate_fitbit_token():
+# Note that this must match one of the callback URLs configured at
+# https://dev.fitbit.com/apps/details/<app ID>
+FITBIT_CALLBACK_URI = 'fitbitCallback'
+
+
+def _generate_fitbit_token():
+    """Generate a new fitbit access token by following the OAuth Authorization
+    Code Flow.
+
+    Note that this will redirect to the view associated with the callback URI.
+
+    See https://dev.fitbit.com/apps/oauthinteractivetutorial
+    """
+
+    oauth = OAuth2Session(client_id=flask_app.config['FITBIT_CLIENT_ID'],
+            redirect_uri=request.host_url + FITBIT_CALLBACK_URI,
+            scope=['activity'])
+
+    authorization_url, state = oauth.authorization_url(
+            'https://www.fitbit.com/oauth2/authorize',
+            access_type="offline",
+            prompt="select_account",
+            # make this token last 1 year
+            expires_in=31536000)
+
+    logging.info(authorization_url)
+
+    return redirect(authorization_url)
+
+
+def _refresh_fitbit_token():
     """Generate a new fitbit access token using a refresh token.
 
     This function uses an OAuth refresh token stored in the Flask app.config.
@@ -22,6 +54,9 @@ def generate_fitbit_token():
         Access token with keys [access_token, expires_in, refresh_token,
         scope, token_type, user_id]
     """
+
+    if not flask_app.config['FITBIT_REFRESH_TOKEN']:
+        _generate_fitbit_token()
 
     id_secret = (f'{flask_app.config["FITBIT_CLIENT_ID"]}:'
                  f'{flask_app.config["FITBIT_CLIENT_SECRET"]}')
@@ -43,7 +78,8 @@ def generate_fitbit_token():
                               headers=auth_header, params=post_params).json()
 
     if 'errors' in new_token:
-        logging.ERROR(new_token)
+        logging.error(new_token)
+        raise ValueError('Error with Fitbit OAuth token')
 
     # update the app config with the new refresh token
     flask_app.config.update(FITBIT_REFRESH_TOKEN=new_token['refresh_token'])
@@ -53,7 +89,7 @@ def generate_fitbit_token():
 
 def query_fitbit(day):
 
-    token_dict = generate_fitbit_token()
+    token_dict = _refresh_fitbit_token()
 
     headers = {'Accept-Language': 'en_US'}
 
