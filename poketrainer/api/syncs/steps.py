@@ -7,19 +7,15 @@ from flask import request
 from poketrainer.app import db
 from poketrainer.models.records import (
     StepRecord, StepRecordSchema, StepCounter)
+from poketrainer.api.syncs.fitbit import query_fitbit
 
 
 def _query_fitbit_api(date):
     """Retrieve step data from the fitbit API"""
 
-    date_str = date.date().isoformat()
+    resp = query_fitbit(date)
 
-    # TODO: make this pull from the real API
-    dummy = {'2019-10-20': 8000,
-             '2019-10-21': 9000,
-             '2019-10-22': 10000}
-
-    return {'steps': dummy.get(date_str, 5000)}
+    return resp['summary']['steps']
 
 
 def get(date=None):
@@ -38,12 +34,14 @@ def post(date):
 
     date = parser.parse(date)
 
-    fitbit_resp = _query_fitbit_api(date)
+    steps = _query_fitbit_api(date)
 
+    # record the step count for this date or update the existing step count if
+    # it already exists
     record = StepRecord(
         record_date=date,
         updated_at=dt.datetime.utcnow(),
-        steps=fitbit_resp['steps'])
+        steps=steps)
 
     db.session.merge(record)
     db.session.commit()
