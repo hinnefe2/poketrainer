@@ -33,7 +33,7 @@ db = SQLAlchemy(flask_app)
 flask_app.config.update(
     FITBIT_CLIENT_ID=os.getenv('FITBIT_CLIENT_ID'),
     FITBIT_CLIENT_SECRET=os.getenv('FITBIT_CLIENT_SECRET'),
-    FITBIT_REFRESH_TOKEN=os.getenv('FITBIT_REFRESH_TOKEN'))
+    FITBIT_REFRESH_TOKEN=None)
 
 # Set up the marshamallow json serialization integration
 ma = Marshmallow(flask_app)
