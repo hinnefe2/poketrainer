@@ -33,17 +33,6 @@ ma = Marshmallow(flask_app)
 # find the db thing they need to import from this module
 connex_app.add_api('swagger.yaml')
 
-
 logging.basicConfig(level=logging.INFO)
 
-
-@flask_app.route('/ui/collection/')
-def collection():
-    pokemon = req.get(request.host_url + 'api/collection').json()
-    return render_template('collection.html', pokemon=pokemon)
-
-
-@flask_app.route('/ui/team/')
-def team():
-    pokemon = req.get(request.host_url + 'api/team').json()
-    return render_template('collection.html', pokemon=pokemon)
+import poketrainer.views
