@@ -1,4 +1,5 @@
 import logging
+import os
 
 import connexion
 import requests as req
@@ -18,6 +19,12 @@ flask_app = connex_app.app
 flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(flask_app)
+
+# Set up the Fitbit API credentials
+flask_app.config.update(
+    FITBIT_CLIENT_ID=os.getenv('FITBIT_CLIENT_ID'),
+    FITBIT_CLIENT_SECRET=os.getenv('FITBIT_CLIENT_SECRET'),
+    FITBIT_REFRESH_TOKEN=os.getenv('FITBIT_REFRESH_TOKEN'))
 
 # Set up the marshamallow json serialization integration
 ma = Marshmallow(flask_app)
