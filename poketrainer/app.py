@@ -55,6 +55,7 @@ logging.getLogger('werkzeug').handlers = []
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 logging.getLogger('poketrainer.api.syncs.steps').setLevel(logging.DEBUG)
+logging.getLogger('poketrainer.views').setLevel(logging.DEBUG)
 logging.getLogger('werkzeug').setLevel(logging.INFO)
 
 import poketrainer.views
