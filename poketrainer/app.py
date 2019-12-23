@@ -41,6 +41,9 @@ flask_app.config.update(
     FITBIT_CLIENT_SECRET=os.getenv('FITBIT_CLIENT_SECRET'),
     FITBIT_REFRESH_TOKEN=None)
 
+# Set the secret key so we can use the session object
+flask_app.secret_key = os.getenv('FLASK_SECRET_KEY')
+
 # Set up the marshamallow json serialization integration
 ma = Marshmallow(flask_app)
 
