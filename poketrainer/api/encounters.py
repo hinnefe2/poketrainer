@@ -32,7 +32,7 @@ def _sample_species(location):
 
     possible_encounters = lookup[location]
 
-    # this is gross by choice() won't sample from more complicated objects
+    # this is gross but choice() won't sample from more complicated objects
     [_idx] = choice([i for i, _ in enumerate(possible_encounters)],
                     p=[enc.prob for enc in possible_encounters],
                     size=1, replace=True)
@@ -41,7 +41,7 @@ def _sample_species(location):
 
     [level] = choice(list(range(encounter.min_lvl, encounter.max_lvl)), 1)
 
-    LOG.debug(f'encountered a level {level} {encounter.species}')
+    LOG.info(f'encountered a level {level} {encounter.species}')
 
     return encounter.species, level
 

@@ -10,6 +10,9 @@ from poketrainer.api.syncs.fitbit import _generate_fitbit_token, \
     FITBIT_CALLBACK_URI
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 @flask_app.route('/ui/collection/')
 def collection():
     pokemon = requests.get(request.host_url + 'api/collection').json()
@@ -49,7 +52,7 @@ def fitbit_callback():
     token = requests.post('https://api.fitbit.com/oauth2/token',
                           headers=auth_header, params=post_params).json()
 
-    logging.info(token)
+    LOGGER.debug(token)
 
     # for some reason this fails with 'Missing access token'
     # c.f. https://github.com/requests/requests-oauthlib/issues/324

@@ -42,6 +42,13 @@ ma = Marshmallow(flask_app)
 # find the db thing they need to import from this module
 connex_app.add_api('swagger.yaml')
 
-logging.basicConfig(level=logging.INFO)
+# remove the default handlers that Flask assigns so that we get consistent
+# formatting
+logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger('werkzeug').handlers = []
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+logging.getLogger('poketrainer.api.syncs.steps').setLevel(logging.DEBUG)
+logging.getLogger('werkzeug').setLevel(logging.INFO)
 
 import poketrainer.views

@@ -12,6 +12,7 @@ from poketrainer.app import flask_app
 # Note that this must match one of the callback URLs configured at
 # https://dev.fitbit.com/apps/details/<app ID>
 FITBIT_CALLBACK_URI = 'fitbitCallback'
+LOGGER = logging.getLogger(__name__)
 
 
 def _generate_fitbit_token():
@@ -34,7 +35,7 @@ def _generate_fitbit_token():
             # make this token last 1 year
             expires_in=31536000)
 
-    logging.info(authorization_url)
+    LOGGER.debug(authorization_url)
 
     return redirect(authorization_url)
 
@@ -78,7 +79,7 @@ def _refresh_fitbit_token():
                               headers=auth_header, params=post_params).json()
 
     if 'errors' in new_token:
-        logging.error(new_token)
+        LOGGER.error(new_token)
         raise ValueError('Error with Fitbit OAuth token')
 
     # update the app config with the new refresh token
