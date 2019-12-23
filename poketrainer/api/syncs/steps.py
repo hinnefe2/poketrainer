@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 import requests as req
 
 from dateutil import parser
@@ -8,6 +9,9 @@ from poketrainer.app import db
 from poketrainer.models.records import (
     StepRecord, StepRecordSchema, StepCounter)
 from poketrainer.api.syncs.fitbit import query_fitbit
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _query_fitbit_api(date):
@@ -29,12 +33,19 @@ def get(date=None):
     return StepRecordSchema(many=True).dump(query.all())
 
 
-def post(date):
+def post(date=None):
     """Add or update a record pulled from a step tracker"""
 
-    date = parser.parse(date)
+    # use the current date if none was specified
+    date = parser.parse(date) if date else dt.date.today()
 
-    steps = _query_fitbit_api(date)
+    try:
+        steps = _query_fitbit_api(date)
+    except ValueError as e:
+        LOGGER.exception(e)
+        return None, 401
+
+    LOGGER.debug(f'Pulled {steps} steps for {date.isoformat()}')
 
     # record the step count for this date or update the existing step count if
     # it already exists
@@ -48,6 +59,8 @@ def post(date):
 
     counter = StepCounter.query.get(1) or StepCounter()
     n_encounters = counter.update()
+
+    LOGGER.debug(f'{steps} generated {n_encounters} encounters')
 
     for _ in range(n_encounters):
         req.post(request.host_url + 'api/encounters')
