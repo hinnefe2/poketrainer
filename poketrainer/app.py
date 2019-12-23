@@ -25,8 +25,14 @@ class ForceHTTPS(object):
 flask_app.wsgi_app = ForceHTTPS(flask_app.wsgi_app)
 
 # Set up the sqlalchemy database integration
-flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+if flask_app.config['ENV'] == 'development':
+    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+
+elif flask_app.config['ENV'] == 'production':
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(flask_app)
 
 # Set up the Fitbit API credentials
