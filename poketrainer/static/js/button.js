@@ -23,3 +23,16 @@ $('.drop-mon').click(function () {
             }
         });
     });
+
+$('.sync-steps').click(function () {
+        $.ajax({
+            url: '/api/syncs/steps',
+            type: 'POST',
+            success: function(response) {
+                alert(response);
+            },
+            error: function(error) {
+                alert(error);
+            }
+        });
+    });
