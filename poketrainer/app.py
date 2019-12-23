@@ -29,8 +29,7 @@ if flask_app.config['ENV'] == 'development':
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
 elif flask_app.config['ENV'] == 'production':
-    flask_app.config["SQLALCHEMY_DATABASE_URI"] = (
-        os.getenv("SQLALCHEMY_DATABASE_URI"))
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
