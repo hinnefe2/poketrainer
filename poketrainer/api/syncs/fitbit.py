@@ -3,7 +3,7 @@ import logging
 
 import requests
 
-from flask import redirect, request
+from flask import redirect, request, session
 from requests_oauthlib import OAuth2Session
 
 from poketrainer.app import flask_app
@@ -56,7 +56,7 @@ def _refresh_fitbit_token():
         scope, token_type, user_id]
     """
 
-    if not flask_app.config['FITBIT_REFRESH_TOKEN']:
+    if not session['FITBIT_REFRESH_TOKEN']:
         _generate_fitbit_token()
 
     id_secret = (f'{flask_app.config["FITBIT_CLIENT_ID"]}:'
@@ -72,7 +72,7 @@ def _refresh_fitbit_token():
                    'Content-Type': 'application/x-www-form-urlencoded'}
 
     post_params = {'grant_type': 'refresh_token',
-                   'refresh_token': flask_app.config['FITBIT_REFRESH_TOKEN']}
+                   'refresh_token': session['FITBIT_REFRESH_TOKEN']}
 
     # request the actual access token
     new_token = requests.post('https://api.fitbit.com/oauth2/token',
@@ -82,8 +82,8 @@ def _refresh_fitbit_token():
         LOGGER.error(new_token)
         raise ValueError('Error with Fitbit OAuth token')
 
-    # update the app config with the new refresh token
-    flask_app.config.update(FITBIT_REFRESH_TOKEN=new_token['refresh_token'])
+    # update the session with the new refresh token
+    session.update(FITBIT_REFRESH_TOKEN=new_token['refresh_token'])
 
     return new_token
 

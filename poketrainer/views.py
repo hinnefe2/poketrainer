@@ -2,7 +2,7 @@ import base64
 import logging
 import requests
 
-from flask import redirect, render_template, request
+from flask import redirect, render_template, request, session
 from requests_oauthlib import OAuth2Session
 
 from poketrainer.app import flask_app
@@ -66,7 +66,7 @@ def fitbit_callback():
     #     include_client_id=True,
     #     client_secret=flask_app.config['FITBIT_CLIENT_SECRET'])
 
-    flask_app.config.update(
+    session.update(
         FITBIT_REFRESH_TOKEN=token['refresh_token'])
 
     return redirect('/ui/collection/')
