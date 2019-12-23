@@ -1,1 +1,1 @@
-web: gunicorn app:flask_app
+web: gunicorn poketrainer.app:flask_app
